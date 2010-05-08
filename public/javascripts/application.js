@@ -5,8 +5,8 @@ var current_marker;
 
 $(document).ready(function() {
   var convention_center = new google.maps.LatLng(39.285685,-76.616936);
-	neighborhood_center = new google.maps.LatLng(39.283925,-76.597967);  	
-	
+  neighborhood_center = new google.maps.LatLng(39.283925,-76.597967);    
+  
   map = new google.maps.Map(document.getElementById("map_canvas"), {
     zoom: 14,
     center: neighborhood_center,
@@ -32,7 +32,7 @@ $(document).ready(function() {
       navLinks.removeClass('selected');
       // Select active link and 
       link.addClass('selected');
-			
+
       $.get(this.id, function(data) {
         listings.html(data).slideDown(function() {
           $('dl dt:first a').click();
@@ -41,29 +41,30 @@ $(document).ready(function() {
     }
   });
 
-	var activeNeighborhoodLink = window.location.hash ? $('a[href$="' + window.location.hash + '"]') : navLinks.filter(':first');
-	activeNeighborhoodLink.click();
+  var activeNeighborhoodLink = window.location.hash ? $('a[href$="' + window.location.hash + '"]') : navLinks.filter(':first');
+  activeNeighborhoodLink.click();
 
   $('.locations a.ale_house').live('click', function(event) {
     event.preventDefault();
     var link = $(this);
     if (!link.hasClass('active')) {
-      $('dl a').removeClass('active');
+      // setting only the select link to "active"
+      $('.locations a.ale_house').removeClass('active');
       link.addClass('active');
       $('dl dd.active').removeClass('active').animate({height: 0, padding: 0}, function() {
         $(this).css('display', '').css({height: '', padding: ''});
-      });			
-			if(typeof(current_marker) != 'undefined'){
-				current_marker.setMap(null);
-			}
-			var current_position = ale_house_markers[this.id];
-			current_marker = new google.maps.Marker({
-		    position: current_position,
-		    map: map,
-		    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bar|8fb220',
-		    title: "Railsconf - at the Baltimore Convention Center"
-		  });
-			map.panTo(current_position);
+      });
+      if(typeof(current_marker) != 'undefined'){
+        current_marker.setMap(null);
+      }
+      var current_position = ale_house_markers[this.id];
+      current_marker = new google.maps.Marker({
+        position: current_position,
+        map: map,
+        icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bar|8fb220',
+        title: link.text()
+      });
+      map.panTo(current_position);
       link.parents('dt').next().addClass('active').slideDown();
     }
   });
