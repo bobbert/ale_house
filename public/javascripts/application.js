@@ -1,4 +1,4 @@
-var ale_house_markers = {};
+var ale_houses = {};
 var map;
 var neighborhood_center;
 var current_marker;
@@ -21,17 +21,22 @@ $(document).ready(function() {
     title: "Railsconf - at the Baltimore Convention Center"
   });
 
-  var navLinks = $("#nav a"), listings = $('#ale_house_listing').css('overflow', 'hidden');
+  var navLinks = $("#nav a"), listings = $('#ale_house_listing');
 
   navLinks.click(function(event) {
     var link = $(this);
     if (!link.hasClass('active')) {
       // Hide listings box
       listings.slideUp();
+
       // Un-select active links
-      navLinks.removeClass('selected');
+      navLinks.removeClass('active');
+
       // Select active link and 
-      link.addClass('selected');
+      link.addClass('active');
+
+      clearMarker();
+			map.panTo(neighborhood_center);
 
       $.get(this.id, function(data) {
         listings.html(data).slideDown(function() {
@@ -43,29 +48,39 @@ $(document).ready(function() {
 
   var activeNeighborhoodLink = window.location.hash ? $('a[href$="' + window.location.hash + '"]') : navLinks.filter(':first');
   activeNeighborhoodLink.click();
+  activeNeighborhoodLink.addClass('active');
 
   $('.locations a.ale_house').live('click', function(event) {
     event.preventDefault();
     var link = $(this);
     if (!link.hasClass('active')) {
-      // setting only the select link to "active"
-      $('.locations a.ale_house').removeClass('active');
+
+      // Remove the active class from everyone but the current selection
+      $('ul.locations a.active').removeClass('active');
       link.addClass('active');
-      $('dl dd.active').removeClass('active').animate({height: 0, padding: 0}, function() {
-        $(this).css('display', '').css({height: '', padding: ''});
-      });
-      if(typeof(current_marker) != 'undefined'){
-        current_marker.setMap(null);
-      }
-      var current_position = ale_house_markers[this.id];
+
+      // Add the description for this ale house to the page
+      $('#description_container p').text(ale_houses[this.id]['description'])
+
+      clearMarker();
+
+      // Create a marker for the current selection
+			var current_position = ale_houses[this.id]['position'];
       current_marker = new google.maps.Marker({
         position: current_position,
         map: map,
         icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bar|8fb220',
         title: link.text()
       });
+
+      // Move the map to the new selection
       map.panTo(current_position);
-      link.parents('dt').next().addClass('active').slideDown();
     }
   });
+
+  function clearMarker() {
+    if(typeof(current_marker) != 'undefined'){
+      current_marker.setMap(null);
+    } 
+  }
 });
