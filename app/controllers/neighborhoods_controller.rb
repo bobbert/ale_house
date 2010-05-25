@@ -1,7 +1,8 @@
 require 'find_or_redirect'
 
 class NeighborhoodsController < ApplicationController
-  before_filter :require_user, :except => [:index]
+
+  before_filter :require_user, :except => [:index, :show]
 
   find_or_redirect :only => [:edit, :show]
   
@@ -10,7 +11,8 @@ class NeighborhoodsController < ApplicationController
   end
   
   def show
-    
+    @neighborhood = Neighborhood.find(params[:id])
+    render :json => @neighborhood.to_json
   end
   
   def new
