@@ -2,8 +2,8 @@ require 'find_or_redirect'
 
 class AleHousesController < ApplicationController
   before_filter :require_user, :except => [:listing]
-  
-  find_or_redirect :except => [:index, :new, :listing, :create], :redirect_to => 'neighborhoods_path'
+
+  find_or_redirect :except => [:index, :new, :listing, :create, :preview], :redirect_to => 'neighborhoods_path'
   find_or_redirect :only => [:create, :index, :listing], 
                    :redirect_to => 'neighborhoods_path', 
                    :name => 'neighborhood',
@@ -37,7 +37,12 @@ class AleHousesController < ApplicationController
     @house = AleHouse.find_by_id(params[:id])
     render 'edit'
   end
-  
+
+  def preview()
+    @house = AleHouse.find_by_id(params[:id])
+    render 'preview'
+  end
+
   def update()
     if @ale_house.update_attributes!(params[:ale_house]) then
       flash[:info] = 'Ale House updated.'

@@ -4,7 +4,9 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :neighborhoods do |n|
     n.resources :ale_houses, :collection => {:listing => :get}
   end
-  
+
+  map.preview "/preview/:id", :controller => "ale_houses", :action => "preview"
+
   map.login "/login", :controller => "authorizations", :action => "login"
   map.logout "/logout", :controller => "authorizations", :action => "logout"
   map.admin "/admin", :controller => "authorizations", :action => "index"
